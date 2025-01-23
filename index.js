@@ -2,8 +2,12 @@ const mysql = require('mysql2/promise');
 const dbConfig = require('./config/dbConfig');
 
 const express = require('express');
+const bodyParser = require('body-parser');
 const app = express();
 const port = 3000;
+
+// Middleware untuk parsing JSON
+app.use(bodyParser.json());
 
 // Buat koneksi pooling
 const pool = mysql.createPool({
@@ -13,27 +17,100 @@ const pool = mysql.createPool({
   password: dbConfig.password,
   database: dbConfig.database,
   waitForConnections: true,
-  connectionLimit: 10, // Jumlah koneksi maksimum dalam pool
-  queueLimit: 0,       // Tidak ada batas antrian koneksi
+  connectionLimit: 10,
+  queueLimit: 0,
 });
 
 // Endpoint untuk cek koneksi
 app.get('/', (req, res) => {
-  res.send('Hello World!')
+  res.send('Hello World!');
 });
 
-// Endpoint untuk mendapatkan data
-app.get('/api/v1/get/:tb_name/list-doa', async (req, res) => {
+// CREATE - Tambah data ke tabel
+app.post('/api/v1/:tb_name', async (req, res) => {
+  const tb_name = req.params.tb_name;
+  const data = req.body;
+
+  try {
+    const query = `INSERT INTO ?? SET ?`;
+    const [result] = await pool.query(query, [tb_name, data]);
+
+    res.json({
+      success: true,
+      message: 'Data inserted successfully',
+      insertId: result.insertId,
+    });
+  } catch (err) {
+    console.error('Error executing query:', err.message);
+    res.status(500).json({
+      success: false,
+      message: 'Internal Server Error',
+      error: err.message,
+    });
+  }
+});
+
+// READ - Ambil data dari tabel
+app.get('/api/v1/:tb_name', async (req, res) => {
   const tb_name = req.params.tb_name;
 
-  // Hindari SQL Injection dengan parameter binding
-  const query = `SELECT * FROM ??`;
   try {
+    const query = `SELECT * FROM ??`;
     const [results] = await pool.query(query, [tb_name]);
+
     res.json({
       success: true,
       message: 'Data retrieved successfully',
       data: results,
+    });
+  } catch (err) {
+    console.error('Error executing query:', err.message);
+    res.status(500).json({
+      success: false,
+      message: 'Internal Server Error',
+      error: err.message,
+    });
+  }
+});
+
+// UPDATE - Perbarui data di tabel
+app.put('/api/v1/:tb_name/:id', async (req, res) => {
+  const tb_name = req.params.tb_name;
+  const id = req.params.id;
+  const data = req.body;
+
+  try {
+    const query = `UPDATE ?? SET ? WHERE id = ?`;
+    const [result] = await pool.query(query, [tb_name, data, id]);
+
+    res.json({
+      success: true,
+      message: 'Data updated successfully',
+      affectedRows: result.affectedRows,
+    });
+  } catch (err) {
+    console.error('Error executing query:', err.message);
+    res.status(500).json({
+      success: false,
+      message: 'Internal Server Error',
+      error: err.message,
+    });
+  }
+});
+
+// DELETE - Hapus data dari tabel
+app.delete('/api/v1/:tb_name/:id', async (req, res) => {
+  const tb_name = req.params.tb_name;
+  const id = req.params.id;
+
+  try {
+    const query = `DELETE FROM ?? WHERE id = ?`;
+    const [result] = await pool.query(query, [tb_name, id]);
+
+    res.json({
+      success: true,
+      message: 'Data deleted successfully',
+      affectedRows: result.affectedRows,
     });
   } catch (err) {
     console.error('Error executing query:', err.message);

@@ -35,7 +35,7 @@ app.post('/api/v1/:tb_name', async (req, res) => {
     const query = `INSERT INTO ?? SET ?`;
     const [result] = await pool.query(query, [tb_name, data]);
 
-    res.json({
+    res.status(201).json({
       success: true,
       message: 'Data inserted successfully',
       insertId: result.insertId,
@@ -58,7 +58,7 @@ app.get('/api/v1/:tb_name', async (req, res) => {
     const query = `SELECT * FROM ??`;
     const [results] = await pool.query(query, [tb_name]);
 
-    res.json({
+    res.status(200).json({
       success: true,
       message: 'Data retrieved successfully',
       data: results,
@@ -83,7 +83,7 @@ app.put('/api/v1/:tb_name/:id', async (req, res) => {
     const query = `UPDATE ?? SET ? WHERE id = ?`;
     const [result] = await pool.query(query, [tb_name, data, id]);
 
-    res.json({
+    res.status(200).json({
       success: true,
       message: 'Data updated successfully',
       affectedRows: result.affectedRows,
@@ -107,7 +107,7 @@ app.delete('/api/v1/:tb_name/:id', async (req, res) => {
     const query = `DELETE FROM ?? WHERE id = ?`;
     const [result] = await pool.query(query, [tb_name, id]);
 
-    res.json({
+    res.status(200).json({
       success: true,
       message: 'Data deleted successfully',
       affectedRows: result.affectedRows,

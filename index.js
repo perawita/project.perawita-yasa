@@ -6,8 +6,16 @@ const bodyParser = require('body-parser');
 const app = express();
 const port = 3000;
 
-// Middleware untuk parsing JSON
-app.use(bodyParser.json());
+
+// Midlawer and Cros
+app.use(
+  bodyParser.json(),
+  cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  })
+);
 
 // Buat koneksi pooling
 const pool = mysql.createPool({

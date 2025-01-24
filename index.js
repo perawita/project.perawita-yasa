@@ -2,18 +2,19 @@ const mysql = require('mysql2/promise');
 const dbConfig = require('./config/dbConfig');
 
 const express = require('express');
+const cors = require('cors');
+
 const bodyParser = require('body-parser');
 const app = express();
 const port = 3000;
 
-
-// Midlawer and Cros
+// Midlawer dan Cros
 app.use(
-  bodyParser.json(),
+  bodyParser.json(), // Parsing json
   cors({
-    origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    origin: '*', // Izinkan semua domain (ganti dengan domain Flutter Anda untuk keamanan)
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Metode HTTP yang diizinkan
+    allowedHeaders: ['Content-Type', 'Authorization'], // Header yang diizinkan
   })
 );
 
